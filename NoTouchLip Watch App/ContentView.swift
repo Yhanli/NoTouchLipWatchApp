@@ -9,86 +9,46 @@ import SwiftUI
 import CoreMotion
 
 
-struct ContentView: View {
-    @State private var x = 111.111
-    @State private var y = 222.111
+class MotionManager: ObservableObject {
+    private let motionManager = CMMotionManager()
     
-    var manager = CMMotionManager()
+    @Published var x = 0.0
+    @Published var y = 0.0
+    
+    init(){
+        motionManager.deviceMotionUpdateInterval = 1/5
+        motionManager.startDeviceMotionUpdates(to:.main){[weak self] data, error in
+            guard let motion = data?.attitude else {return}
+            self?.x = motion.roll
+            self?.y = motion.pitch
+            
+        }
+    }
+}
 
-    var motionQueue = OperationQueue()
-//
-//    init(manager: CMMotionManager = CMMotionManager(), motionQueue: OperationQueue = OperationQueue()) {
-//        self.manager = manager
-//        self.motionQueue = motionQueue
-//
-//
-//        manager.startGyroUpdates(to: motionQueue){ (data:CMGyroData?,error:Error?) in
-//            guard let data = data else{
-//                print("Error: \(error)")
-//                return
-//            }
-//
-//            let motion:CMRotationRate = data.rotationRate
-//            manager.gyroUpdateInterval = 2
-//
-//            DispatchQueue.main.async {
-//
-//
-//                print(motion.x)
-//                print(motion.y)
-//                print(motion.z)
-//
-//            }
-//
-//        }
-//
-//    }
-//
-
+struct ContentView: View {
+    @StateObject private var motion = MotionManager()
     var body: some View {
         
-        VStack {
-            Image(systemName: "house")
-                .resizable()
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-           
-            Text("\(x)")
-            Text("\(y)")
-                .onAppear{
-                    startGyroUpdates()
-                }
-//            Button{
-//                update()
-//
-//            } label: {
-//                Text("Click")
-//            }
+        VStack{
+            Text("\(motion.x) : \(motion.y)")
+            
+            Image(systemName: "arrow.down.message.fill")
+                .foregroundStyle(
+                    .blue.gradient.shadow(
+                        .inner(color: .black,radius: 1,x: motion.x * -3 , y: motion.y * -3)
+                    )
+//                    .shadow(
+//                        .drop(color: .black.opacity(0.2), radius: 1, x: motion.x * 10, y: motion.y * 10)
+//                    )
+                )
+                .font(.system(size: 100).bold())
+                .rotation3DEffect(.degrees(motion.x * 3), axis: (x: 0, y: 0, z: 0))
+                .rotation3DEffect(.degrees(motion.y * 3), axis: (x: -1, y: 0, z: 0))
         }
-        .padding()
+        
     }
     
-    private func startGyroUpdates() {
-        manager.startGyroUpdates(to: motionQueue) { data, error in
-            guard let data = data else {
-                print("Error: \(error)")
-                return
-            }
-
-            let motion: CMRotationRate = data.rotationRate
-            manager.gyroUpdateInterval = 2
-
-            DispatchQueue.main.async {
-                x = motion.x
-                y = motion.y
-
-                print(motion.x)
-                print(motion.y)
-                print(motion.z)
-            }
-        }
-    }
-
 }
 
 struct ContentView_Previews: PreviewProvider {
