@@ -36,15 +36,15 @@ struct ContentView: View {
             Image(systemName: "arrow.down.message.fill")
                 .foregroundStyle(
                     .blue.gradient.shadow(
-                        .inner(color: .black,radius: 1,x: motion.x * -3 , y: motion.y * -3)
+                        .inner(color: .black,radius: 2,x: motion.x * -10 , y: motion.y * -10)
                     )
 //                    .shadow(
 //                        .drop(color: .black.opacity(0.2), radius: 1, x: motion.x * 10, y: motion.y * 10)
 //                    )
                 )
                 .font(.system(size: 100).bold())
-                .rotation3DEffect(.degrees(motion.x * 3), axis: (x: 0, y: 0, z: 0))
-                .rotation3DEffect(.degrees(motion.y * 3), axis: (x: -1, y: 0, z: 0))
+                .rotation3DEffect(.degrees(motion.x * 5), axis: (x: 0, y: 0, z: 0))
+                .rotation3DEffect(.degrees(motion.y * 5), axis: (x: -1, y: 0, z: 0))
         }
         
     }
